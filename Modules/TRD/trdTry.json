@@ -1,0 +1,215 @@
+{
+  "qc": {
+    "config": {
+      "database": {
+        "implementation": "CCDB",
+        "host": "ccdb-test.cern.ch:8080",
+        "username": "not_applicable",
+        "password": "not_applicable",
+        "name": "not_applicable"
+      },
+      "Activity": {
+        "number": "123456",
+        "type": "PHYSICS"
+      },
+      "monitoring": {
+        "url": "infologger:///debug?qc"
+      },
+      "conditionDB": {
+        "url": "http://ccdb-test.cern.ch:8080"
+      },
+      "consul": {
+        "url": ""
+      },
+      "bookkeeping": {
+        "url": ""
+      }
+    },
+
+    "tasks": [
+      {
+        "taskName": "TrdTrySkelton",
+        "className": "o2::quality_control_modules::trd::TrdTrySkeltonTask",
+        "moduleName": "QcTRD",
+        "detectorName": "TRD",
+        "cycleDurationSeconds": 30,
+        "dataSources": [
+          {
+            "type": "direct",
+            "name": "tracklets",
+            "query": "tracklets:TRD/TRACKLETS/0"
+          },
+          {
+            "type": "direct",
+            "name": "triggers",
+            "query": "triggers:TRD/TRKTRGRD"
+          }
+        ],
+        "taskParameters": {
+          "myOwnKey": "defaultValue"
+        },
+        "location": "local",
+        "saveObjectsToFile": "pp_TrdTrySkeltonOutput.root",
+        
+        "objects": [
+          {
+            "name": "Q0",
+            "drawOptions": {
+              "logy": true
+            }
+          },
+          {
+            "name": "Q1",
+            "drawOptions": {
+              "logy": true
+            }
+          },
+          {
+            "name": "Q2",
+            "drawOptions": {
+              "logy": true
+            }
+          },
+          {
+            "name": "MCMTrackletPerMCM",
+            "drawOptions": {
+              "logy": true
+            }
+          },
+          {
+            "name": "nTrackletsEVENT",
+            "drawOptions": {
+              "logy": true
+            }
+          }
+        ]
+      }
+    ],
+
+    "postprocessing": {
+      "TestTrending": {
+        "active": "true",
+        "className": "o2::quality_control::postprocessing::TrackletsTrending",
+        "moduleName": "QcTRD",
+        "detectorName": "TRD",
+
+        "dataSources": [
+          {
+            "type": "repository",
+            "path": "TRD/MO/TrdTrySkelton/",
+            "names": ["nTrackletsTF", "nTrackletsEVENT", "MCMTrackletPerMCM", "MCM", "PadRow", "Chamber"],
+            "reductorName": "o2::quality_control_modules::common::TH1Reductor",
+            "moduleName": "QcCommon"
+          }
+        ],
+
+        "plots": [
+          {
+            "names": ["mean_distribution_trackletpertimeframe"],
+            "title": ["Mean distribution of tracklets per timeframe"],
+            "varexp": ["nTrackletsTF.mean"],
+            "selection": "",
+            "option": ""
+          },
+          {
+            "names": ["mean_distribution_trackletperevent"],
+            "title": ["Mean distribution of tracklets per event"],
+            "varexp": ["nTrackletsEVENT.mean"],
+            "selection": "",
+            "option": ""
+          },
+          {
+            "names": ["mean_distribution_trackletperMCM"],
+            "title": ["Mean distribution of Number tracklets per MCM"],
+            "varexp": ["MCMTrackletPerMCM.mean"],
+            "selection": "",
+            "option": ""
+          },
+          {
+            "names": ["mean_distribution_trackletperGlobalMCM"],
+            "title": ["Mean distribution of tracklets per Global MCM"],
+            "varexp": ["MCM.mean"],
+            "selection": "",
+            "option": ""
+          },
+          {
+            "names": ["mean_distribution_trackletperPadRow"],
+            "title": ["Mean distribution of tracklets per Pad Row"],
+            "varexp": ["PadRow.mean"],
+            "selection": "",
+            "option": ""
+          },
+          {
+            "names": ["mean_distribution_trackletperChamber"],
+            "title": ["Mean distribution of tracklets per Chamber"],
+            "varexp": ["Chamber.mean"],
+            "selection": "",
+            "option": ""
+          },
+          {
+            "names": ["mean_trend_trackletspertimeframe"],
+            "title": ["Mean trend of tracklets per timeframe"],
+            "varexp": ["nTrackletsTF.mean:time"],
+            "selection": "",
+            "option": "*L"
+          },
+          {
+            "names": ["mean_trend_trackletperevent"],
+            "title": ["Mean trend of tracklets per event"],
+            "varexp": ["nTrackletsEVENT.mean:time"],
+            "selection": "",
+            "option": "*L"
+          },
+          {
+            "names": ["mean_trend_MCMtrackletperMCM"],
+            "title": ["Mean trend of tracklets per MCM"],
+            "varexp": ["MCMTrackletPerMCM.mean:time"],
+            "selection": "",
+            "option": "*L"
+          },
+          {
+            "names": ["mean_trend_trackletperGlobalMCM"],
+            "title": ["Mean trend of tracklets per Global MCM"],
+            "varexp": ["MCM.mean:time"],
+            "selection": "",
+            "option": "*L"
+          },
+          {
+            "names": ["mean_trend_trackletperPadRow"],
+            "title": ["Mean trend of tracklets per Pad Row"],
+            "varexp": ["PadRow.mean:time"],
+            "selection": "",
+            "option": "*L"
+          },
+          {
+            "names": ["mean_trend_trackletperChamber"],
+            "title": ["Mean trend of tracklets per Chamber"],
+            "varexp": ["Chamber.mean:time"],
+            "selection": "",
+            "option": "*L"
+          }
+        ],
+
+        "initTrigger": [
+          "usercontrol"
+        ],
+        "updateTrigger": [
+          "newobject:qcdb:TRD/MO/TrdTrySkelton/trackletspertimeframe",
+          "newobject:qcdb:TRD/MO/TrdTrySkelton/trackletsperevent",
+          "newobject:qcdb:TRD/MO/TrdTrySkelton/MCMTrackletPerMCM",
+          "newobject:qcdb:TRD/MO/TrdTrySkelton/PadRow",
+          "newobject:qcdb:TRD/MO/TrdTrySkelton/Chamber",
+          "20 seconds"
+        ],
+        "stopTrigger": [
+          "usercontrol",
+          "usercontrol",
+          "usercontrol",
+          "10 minutes"
+        ]
+      }
+    },
+
+    "dataSamplingPolicies": []
+  }
+}
